@@ -50,48 +50,53 @@ class ChatServer:
 
    def clientthread(self, conn):
 
-      addr = conn.getpeername()
-      self.socklist.append(conn)
-      conn.settimeout(timeout)
-      conn.sendall("Welcome to the server. Type something and hit enter\r\n".encode() )
+      try:
 
-      while True:
+         self.socklist.append(conn)
+         conn.settimeout(timeout)
+         conn.sendall("Welcome to the server. Type something and hit enter\r\n".encode() )
 
-         try:
+         while True:
 
-            data = conn.recv(1024)
+            try:
 
-         except socket.timeout as t:
+               data = conn.recv(1024)
 
-            print("Timeout. ", end='' )
-            self.record.write("Timeout. ")
-            break
+            except socket.timeout as t:
 
-         if not data:
-            break
+               print("Timeout. ", end='' )
+               self.record.write("Timeout. ")
+               break
 
-         try:
+            if not data:
+               break
 
-            msg = data.decode()
+            try:
 
-         except UnicodeDecodeError:
+               msg = data.decode()
 
-            msg = "###" + " Bad payload " + "###"
-            addr = conn.getpeername()
-            fullmsg = "[" + addr[0] + ":" + str(addr[1]) + "] " + msg + "\n"
-            print(fullmsg)
-            self.record.write(fullmsg)
+            except UnicodeDecodeError:
 
-            continue
+               msg = "###" + " Bad payload " + "###"
+               fullmsg = "[" + addr[0] + ":" + str(addr[1]) + "] " + msg + "\n"
+               print(fullmsg)
+               self.record.write(fullmsg)
 
-         if msg != "\r\n" and msg != "\n" and msg != "" and msg != "\0":
-            self.broadcast(msg, conn)
+               continue
 
-      self.socklist.remove(conn)
-      conn.sendall("Timeout. Connection lost with server\r\n".encode() )
-      conn.close()
-      print("Connection closed with [" + addr[0] + ":" + str(addr[1]) + "]\n" )
-      self.record.write("Connection closed with [" + addr[0] + ":" + str(addr[1]) + "]\n")
+            if msg != "\r\n" and msg != "\n" and msg != "" and msg != "\0":
+               self.broadcast(msg, conn)
+
+         self.socklist.remove(conn)
+         conn.sendall("Timeout. Connection lost with server\r\n".encode() )
+         conn.close()
+         print("Connection closed with [" + addr[0] + ":" + str(addr[1]) + "]\n" )
+         self.record.write("Connection closed with [" + addr[0] + ":" + str(addr[1]) + "]\n")
+
+      except socket.error as e:
+         msg = "Error number: " + str(e.errno) + ". Message: " + e.strerror + "\n"
+         print(msg)
+         self.record.write(msg)
 
    def broadcast(self, msg, sender):
 
