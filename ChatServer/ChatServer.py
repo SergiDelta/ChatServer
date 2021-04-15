@@ -70,7 +70,10 @@ class ChatServer:
          if not data:
             break
 
-         self.broadcast(data.decode(), conn)
+         msg = data.decode()
+
+         if msg != "\r\n" and msg != "\n" and msg != "":
+            self.broadcast(msg, conn)
 
       self.socklist.remove(conn)
       conn.sendall("Timeout. Connection lost with server\n".encode() )
