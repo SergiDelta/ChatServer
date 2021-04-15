@@ -1,19 +1,24 @@
-#													 
-# Author: Sergio Garcia Lopez						 
-# GitHub: https://github.com/SergiDelta/ChatServer	 
-# Date: February 2021								 
-# Description: Simple chat server that uses threads 
-#   to handle TCP connections. It includes chat      
-#   records, timeout handling and broadcasting.      
-#													 
+#####################################################
+#						                                  #
+# Author: Sergio Garcia Lopez                       #
+#			    			                               #
+# GitHub: https://github.com/SergiDelta/ChatServer  #
+#                                                   #
+# Date: April 2021				                      #
+#				                                        #
+# Description: Simple chat server that uses threads #
+#   to handle TCP connections. It includes chat     #
+#   records, timeout handling and broadcasting.     #
+#						                                  #
+#####################################################
 
 import socket
 import sys
 import threading
 import datetime
+import re
 
-timeout = 60
-
+timeout = 30
 
 class ChatServer:
 
@@ -23,7 +28,6 @@ class ChatServer:
       self.port = addr[1]
       self.socklist = []
       self.record = file
-      self.record.write("Session date: " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S") +"\n\n" )
       self.serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       self.serversock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       self.socklist.append(self.serversock)
@@ -32,13 +36,17 @@ class ChatServer:
       try:
          self.serversock.bind( (self.host,self.port) )
       except socket.error as e:
-         print(e)
+         msg = "Failed at binding socket to [" + self.host + ":" + str(self.port) + "] address."
+         msg += " Error number: " + str(e.errno) + ". Message: " + e.strerror + "\n"
+         print(msg)
+         self.record.close()
          sys.exit()
 
       print("Socket binded")
 
       self.serversock.listen(10)
       print("Server listening on port " + str(self.port) + "\n")
+      self.record.write("<-- Session date: " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S") +" -->\n\n" )
 
    def clientthread(self, conn):
 
@@ -89,27 +97,44 @@ class ChatServer:
          conn, addr = self.serversock.accept()
          print("Connected with [" + addr[0] + ":" + str(addr[1]) + "]\n" )
          self.record.write("Connected with [" + addr[0] + ":" + str(addr[1]) + "]\n")
+
          threading.Thread(target=self.clientthread, args=(conn,) ).start()
 
 
 def main():
 
    if len(sys.argv) != 3:
-      print("Use: " + sys.argv[0] + " <ip> " + "<port>")
+      print("Use: " + sys.argv[0] + " <IP> " + "<port>")
+      sys.exit()
+
+   ip_pattern = re.compile("^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
+
+   if ip_pattern.search(sys.argv[1]) == None:
+      print("Ivalid IP address format")
+      sys.exit()
+
+   if sys.argv[2].isdigit() == False:
+      print("Port must be a number (integer)")
       sys.exit()
 
    host = sys.argv[1]
    port = int(sys.argv[2])
 
-   file = open("record.txt", "a")
+   if (port >= 0 and port <= 65535) == False:
+      print("Invalid port (must be 0-65535)") 
+      sys.exit()
+
+   file = open("record.log", "a")
 
    try:
       myServer = ChatServer( (host, port) , file)
       myServer.run()
    except KeyboardInterrupt:
       print()
+   except Exception as e:
+      print(e)
 
-   file.write("\n")
+   file.write("\n<-- Session closed -->\n\n")
    file.close()
 
 if __name__ == "__main__":
