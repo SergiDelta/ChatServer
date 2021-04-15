@@ -110,7 +110,7 @@ def main():
    ip_pattern = re.compile("^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
 
    if ip_pattern.search(sys.argv[1]) == None:
-      print("Ivalid IP address format")
+      print("Invalid IP address format")
       sys.exit()
 
    if sys.argv[2].isdigit() == False:
