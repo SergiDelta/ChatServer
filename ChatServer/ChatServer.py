@@ -53,6 +53,7 @@ class ChatServer:
       try:
 
          self.socklist.append(conn)
+         addr = conn.getpeername()
          conn.settimeout(timeout)
          conn.sendall("Welcome to the server. Type something and hit enter\r\n".encode() )
 
