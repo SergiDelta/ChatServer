@@ -1,4 +1,4 @@
-#####################################################
+####################################################
 #						    #
 # Author: Sergio Garcia Lopez                       #
 #			    			    #
@@ -46,14 +46,14 @@ class ChatServer:
 
       self.serversock.listen(10)
       print("Server listening on port " + str(self.port) + "\n")
-      self.record.write("<-- Session date: " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S") +" -->\n\n" )
+      self.record.write("<-- New session: " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S") +" -->\n\n" )
 
    def clientthread(self, conn):
 
       addr = conn.getpeername()
       self.socklist.append(conn)
       conn.settimeout(timeout)
-      conn.sendall("Welcome to the server. Type something and hit enter\n".encode() )
+      conn.sendall("Welcome to the server. Type something and hit enter\r\n".encode() )
 
       while True:
 
@@ -88,7 +88,7 @@ class ChatServer:
             self.broadcast(msg, conn)
 
       self.socklist.remove(conn)
-      conn.sendall("Timeout. Connection lost with server\n".encode() )
+      conn.sendall("Timeout. Connection lost with server\r\n".encode() )
       conn.close()
       print("Connection closed with [" + addr[0] + ":" + str(addr[1]) + "]\n" )
       self.record.write("Connection closed with [" + addr[0] + ":" + str(addr[1]) + "]\n")
@@ -96,7 +96,7 @@ class ChatServer:
    def broadcast(self, msg, sender):
 
       addr = sender.getpeername()
-      fullmsg = "[" + addr[0] + ":" + str(addr[1]) + "] " + msg
+      fullmsg = "[" + addr[0] + ":" + str(addr[1]) + "] " + msg + "\r"
 
       for sock in self.socklist:
          if sock != self.serversock and sock != sender:
