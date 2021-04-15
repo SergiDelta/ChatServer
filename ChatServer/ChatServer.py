@@ -70,9 +70,21 @@ class ChatServer:
          if not data:
             break
 
-         msg = data.decode()
+         try:
 
-         if msg != "\r\n" and msg != "\n" and msg != "":
+            msg = data.decode()
+
+         except UnicodeDecodeError:
+
+            msg = "###" + " Bad payload " + "###"
+            addr = conn.getpeername()
+            fullmsg = "[" + addr[0] + ":" + str(addr[1]) + "] " + msg + "\n"
+            print(fullmsg)
+            self.record.write(fullmsg)
+
+            continue
+
+         if msg != "\r\n" and msg != "\n" and msg != "" and msg != "\0":
             self.broadcast(msg, conn)
 
       self.socklist.remove(conn)
@@ -102,7 +114,6 @@ class ChatServer:
          self.record.write("Connected with [" + addr[0] + ":" + str(addr[1]) + "]\n")
 
          threading.Thread(target=self.clientthread, args=(conn,) ).start()
-
 
 def main():
 
@@ -136,6 +147,7 @@ def main():
       print()
    except Exception as e:
       print(e)
+      file.write("\n<!> ERROR <!>\n\n")
 
    file.write("\n<-- Session closed -->\n\n")
    file.close()
