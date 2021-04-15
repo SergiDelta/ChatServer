@@ -1,15 +1,15 @@
 #####################################################
-#						                                  #
+#						    #
 # Author: Sergio Garcia Lopez                       #
-#			    			                               #
+#			    			    #
 # GitHub: https://github.com/SergiDelta/ChatServer  #
 #                                                   #
-# Date: April 2021				                      #
-#				                                        #
+# Date: April 2021				    #
+#				                    #
 # Description: Simple chat server that uses threads #
 #   to handle TCP connections. It includes chat     #
 #   records, timeout handling and broadcasting.     #
-#						                                  #
+#						    #
 #####################################################
 
 import socket
