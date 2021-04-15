@@ -1,9 +1,14 @@
-#                                                        
-# Author: Sergio Garcia Lopez                            
-# GitHub: https://github.com/SergiDelta/ChatServer       
-# Date: February 2021                                    
-# Description: Client programm example for ChatServer.py 
-#                                                        
+##########################################################
+#                                                        #
+# Author: Sergio Garcia Lopez                            #
+#                                                        #
+# GitHub: https://github.com/SergiDelta/ChatServer       #
+#                                                        #
+# Date: April 2021                                       #
+#                                                        #
+# Description: Client programm example for ChatServer.py #
+#                                                        #
+##########################################################
 
 import socket
 import sys
