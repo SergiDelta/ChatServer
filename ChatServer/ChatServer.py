@@ -149,7 +149,7 @@ def main():
       print(e)
       file.write("\n<!> ERROR <!>\n\n")
 
-   file.write("\n<-- Session closed -->\n\n")
+   file.write("\n<-- Session closed: " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " -->\n\n")
    file.close()
 
 if __name__ == "__main__":
