@@ -40,6 +40,8 @@ class ChatServer:
          msg += " Error number: " + str(e.errno) + ". Message: " + e.strerror + "\n"
          print(msg)
          self.record.close()
+         self.socklist.remove(self.serversock)
+         self.serversock.close()
          sys.exit()
 
       print("Socket binded")
@@ -98,6 +100,8 @@ class ChatServer:
          msg = "Error number: " + str(e.errno) + ". Message: " + e.strerror + "\n"
          print(msg)
          self.record.write(msg)
+         self.socklist.remove(conn)
+         conn.close()
 
    def broadcast(self, msg, sender):
 
